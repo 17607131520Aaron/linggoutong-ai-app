@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:linggoutong_ai_app/services/api_service.dart';
+import 'package:linggoutong_ai_app/services/user_info_service.dart';
 
 // 蚂蚁金服风格配色（与之前保持一致）
 const Color _kPrimaryColor = Color(0xFF1677FF);
@@ -7,8 +9,50 @@ const Color _kTextPrimary = Color(0xFF333333);
 const Color _kTextSecondary = Color(0xFF999999);
 const Color _kBorderColor = Color(0xFFE5E5E5);
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  UserInfo? _userInfo;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserInfo();
+  }
+
+  Future<void> _loadUserInfo() async {
+    try {
+      final response = await ApiService.getUserInfo();
+      if (response.isSuccess && response.data != null) {
+        final userInfo = UserInfo.fromJson(response.data!);
+        await UserInfoService.saveUserInfo(userInfo);
+        if (mounted) {
+          setState(() {
+            _userInfo = userInfo;
+            _isLoading = false;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +122,9 @@ class HomePage extends StatelessWidget {
 
   // 1. 个人信息卡片
   Widget _buildProfileCard() {
+    final nickname = _userInfo?.nickname ?? '智能用户';
+    final phone = _userInfo?.phone ?? '';
+    
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
@@ -112,13 +159,13 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               // 信息
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('你好，智能用户', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
-                    Text('Pro 会员 · 2099-12-31 到期', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                    Text('你好，$nickname', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text('Pro 会员 · 2099-12-31 到期', style: const TextStyle(color: Colors.white70, fontSize: 12)),
                   ],
                 ),
               ),

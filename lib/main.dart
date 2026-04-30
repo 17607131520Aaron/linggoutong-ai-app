@@ -3,6 +3,7 @@ import 'package:linggoutong_ai_app/router/app_router.dart';
 import 'package:linggoutong_ai_app/common/ant_theme.dart';
 import 'package:linggoutong_ai_app/common/env.dart';
 import 'package:linggoutong_ai_app/services/auth_service.dart';
+import 'package:linggoutong_ai_app/services/user_info_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,6 +12,7 @@ void main() async {
   Env.setEnv(EnvType.dev);
 
   await AuthService.init();
+  await UserInfoService.init();
   runApp(const MyApp());
 }
 

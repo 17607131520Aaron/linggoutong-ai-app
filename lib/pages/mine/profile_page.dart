@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linggoutong_ai_app/common/ant_theme.dart';
 import 'package:linggoutong_ai_app/services/auth_service.dart';
+import 'package:linggoutong_ai_app/services/user_info_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,6 +14,39 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   String _currentRole = '普通用户';
   final List<String> _roles = ['普通用户', '管理员', 'VIP会员', '企业用户'];
+  UserInfo? _userInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserInfo();
+  }
+
+  Future<void> _loadUserInfo() async {
+    final userInfo = await UserInfoService.getUserInfo();
+    if (mounted && userInfo != null) {
+      setState(() {
+        _userInfo = userInfo;
+      });
+    }
+  }
+
+  String _maskPhone(String phone) {
+    if (phone.length >= 7) {
+      return '${phone.substring(0, 3)}****${phone.substring(7)}';
+    }
+    return phone;
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return '未知';
+    try {
+      final date = DateTime.parse(dateStr);
+      return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    } catch (e) {
+      return dateStr;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +76,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildUserHeader() {
+    final nickname = _userInfo?.nickname ?? 'AI 智能用户';
+    final userId = _userInfo?.userId ?? 0;
+
     return GestureDetector(
       onTap: () {},
       child: Container(
@@ -72,9 +109,9 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'AI 智能用户',
-                    style: TextStyle(
+                  Text(
+                    nickname,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: AntColors.textPrimary,
@@ -82,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'ID: 100001',
+                    'ID: $userId',
                     style: TextStyle(
                       fontSize: 13,
                       color: AntColors.textTertiary,
@@ -122,6 +159,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildInfoSection() {
+    final phone = _userInfo?.phone ?? '';
+    final email = _userInfo?.email ?? '未绑定';
+    final createTime = _userInfo?.createTime;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
@@ -131,11 +172,11 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       child: Column(
         children: [
-          _buildInfoItem('手机号', '138****8888'),
+          _buildInfoItem('手机号', phone.isNotEmpty ? _maskPhone(phone) : '未绑定'),
           _buildDivider(),
-          _buildInfoItem('邮箱', '未绑定'),
+          _buildInfoItem('邮箱', email.isNotEmpty ? email : '未绑定'),
           _buildDivider(),
-          _buildInfoItem('注册时间', '2024-01-15'),
+          _buildInfoItem('注册时间', _formatDate(createTime)),
         ],
       ),
     );

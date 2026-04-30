@@ -1,10 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linggoutong_ai_app/common/ant_theme.dart';
+import 'package:linggoutong_ai_app/services/api_service.dart';
 import 'package:linggoutong_ai_app/services/auth_service.dart';
+import 'package:linggoutong_ai_app/services/user_info_service.dart';
 
-class MinePage extends StatelessWidget {
+class MinePage extends StatefulWidget {
   const MinePage({super.key});
+
+  @override
+  State<MinePage> createState() => _MinePageState();
+}
+
+class _MinePageState extends State<MinePage> {
+  UserInfo? _userInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserInfo();
+  }
+
+  Future<void> _loadUserInfo() async {
+    try {
+      final response = await ApiService.getUserInfo();
+      if (response.isSuccess && response.data != null) {
+        final userInfo = UserInfo.fromJson(response.data!);
+        await UserInfoService.saveUserInfo(userInfo);
+        if (mounted) {
+          setState(() {
+            _userInfo = userInfo;
+          });
+        }
+      }
+    } catch (e) {
+      // 接口失败时尝试从本地缓存获取
+      final userInfo = await UserInfoService.getUserInfo();
+      if (mounted && userInfo != null) {
+        setState(() {
+          _userInfo = userInfo;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +79,10 @@ class MinePage extends StatelessWidget {
   }
 
   Widget _buildUserInfoCard(BuildContext context) {
+    final nickname = _userInfo?.nickname ?? 'AI 智能用户';
+    final userId = _userInfo?.userId ?? 0;
+    final phone = _userInfo?.phone ?? '';
+
     return GestureDetector(
       onTap: () => context.push('/profile'),
       child: Container(
@@ -71,9 +113,9 @@ class MinePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'AI 智能用户',
-                  style: TextStyle(
+                Text(
+                  nickname,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: AntColors.textPrimary,
@@ -81,7 +123,7 @@ class MinePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'ID: 100001',
+                  'ID: $userId',
                   style: TextStyle(
                     fontSize: 13,
                     color: AntColors.textTertiary,
