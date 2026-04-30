@@ -21,7 +21,7 @@ class MinePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildUserInfoCard(),
+            _buildUserInfoCard(context),
             const SizedBox(height: 12),
             _buildStatsCard(),
             const SizedBox(height: 12),
@@ -39,8 +39,10 @@ class MinePage extends StatelessWidget {
     );
   }
 
-  Widget _buildUserInfoCard() {
-    return Container(
+  Widget _buildUserInfoCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/profile'),
+      child: Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -112,6 +114,7 @@ class MinePage extends StatelessWidget {
           ),
           const Icon(Icons.chevron_right, color: AntColors.textQuaternary),
         ],
+      ),
       ),
     );
   }

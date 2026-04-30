@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:linggoutong_ai_app/pages/home/home_page.dart';
 import 'package:linggoutong_ai_app/pages/ai/ai_page.dart';
 import 'package:linggoutong_ai_app/pages/mine/mine_page.dart';
+import 'package:linggoutong_ai_app/pages/mine/profile_page.dart';
 import 'package:linggoutong_ai_app/pages/login/login_page.dart';
 import 'package:linggoutong_ai_app/pages/register/register_page.dart';
 import 'package:linggoutong_ai_app/common/ant_theme.dart';
@@ -18,6 +19,10 @@ class AppRouter {
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => const ProfilePage(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
