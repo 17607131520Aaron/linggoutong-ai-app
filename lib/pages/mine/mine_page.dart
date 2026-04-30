@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linggoutong_ai_app/common/ant_theme.dart';
 
 class MinePage extends StatelessWidget {
@@ -29,6 +30,8 @@ class MinePage extends StatelessWidget {
             _buildMenuSection(),
             const SizedBox(height: 12),
             _buildOtherMenuSection(),
+            const SizedBox(height: 24),
+            _buildLogoutButton(context),
             const SizedBox(height: 40),
           ],
         ),
@@ -275,6 +278,56 @@ class MinePage extends StatelessWidget {
           _buildMenuDivider(),
           _buildMenuItem(Icons.privacy_tip_outlined, '隐私政策', () {}),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AntRadius.md),
+            ),
+            title: const Text('提示', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+            content: const Text('确定要退出登录吗？', style: TextStyle(fontSize: 15, color: AntColors.textSecondary)),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('取消', style: TextStyle(color: AntColors.textTertiary)),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  context.go('/login');
+                },
+                child: const Text('确定', style: TextStyle(color: AntColors.primary)),
+              ),
+            ],
+          ),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        height: 48,
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: AntColors.bgPrimary,
+          borderRadius: BorderRadius.circular(AntRadius.md),
+          boxShadow: AntColors.shadow,
+        ),
+        child: const Center(
+          child: Text(
+            '退出登录',
+            style: TextStyle(
+              fontSize: 16,
+              color: AntColors.error,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
       ),
     );
   }

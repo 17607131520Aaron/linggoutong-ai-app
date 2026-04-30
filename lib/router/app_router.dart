@@ -3,12 +3,17 @@ import 'package:go_router/go_router.dart';
 import 'package:linggoutong_ai_app/pages/home/home_page.dart';
 import 'package:linggoutong_ai_app/pages/ai/ai_page.dart';
 import 'package:linggoutong_ai_app/pages/mine/mine_page.dart';
+import 'package:linggoutong_ai_app/pages/login/login_page.dart';
 import 'package:linggoutong_ai_app/common/ant_theme.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/',
     routes: [
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginPage(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return ScaffoldWithNestedNavigation(navigationShell: navigationShell);
