@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   static const String _tokenKey = 'auth_token';
+  static const String _refreshTokenKey = 'refresh_token';
   static const String _loginTimeKey = 'login_time';
   static const int _tokenValidDays = 3;
 
@@ -35,10 +36,17 @@ class AuthService {
     }
   }
 
+  static Future<void> saveToken(String accessToken, String refreshToken) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_tokenKey, accessToken);
+    await prefs.setString(_refreshTokenKey, refreshToken);
+    await prefs.setInt(_loginTimeKey, DateTime.now().millisecondsSinceEpoch);
+    _isLoggedIn = true;
+  }
+
   static Future<void> login() async {
     _isLoggedIn = true;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tokenKey, 'mock_token_${DateTime.now().millisecondsSinceEpoch}');
     await prefs.setInt(_loginTimeKey, DateTime.now().millisecondsSinceEpoch);
   }
 
@@ -50,11 +58,17 @@ class AuthService {
   static Future<void> _clearStorage() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
+    await prefs.remove(_refreshTokenKey);
     await prefs.remove(_loginTimeKey);
   }
 
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_tokenKey);
+  }
+
+  static Future<String?> getRefreshToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_refreshTokenKey);
   }
 }

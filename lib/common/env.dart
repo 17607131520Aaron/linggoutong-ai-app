@@ -14,12 +14,9 @@ class Env {
   }
 
   static final Map<EnvType, Map<String, dynamic>> _config = {
-    EnvType.dev: {'baseUrl': 'http://127.0.0.1:9999', 'appName': '领狗AI(测试)'},
-    EnvType.staging: {
-      'baseUrl': 'http://127.0.0.1:9090',
-      'appName': '领狗AI(预发)',
-    },
-    EnvType.prod: {'baseUrl': 'http://127.0.01:9000', 'appName': '领狗AI'},
+    EnvType.dev: {'baseUrl': 'http://192.168.1.6:9000', 'appName': '领狗AI(测试)'},
+    EnvType.staging: {'baseUrl': 'http://192.168.1.6:9000', 'appName': '领狗AI(预发)'},
+    EnvType.prod: {'baseUrl': 'http://192.168.1.6:9000', 'appName': '领狗AI'},
   };
 
   static Map<String, dynamic> get _currentConfig => _config[_envType]!;

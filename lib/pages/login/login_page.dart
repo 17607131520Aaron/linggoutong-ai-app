@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linggoutong_ai_app/common/ant_theme.dart';
+import 'package:linggoutong_ai_app/services/api_service.dart';
 import 'package:linggoutong_ai_app/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -33,27 +34,72 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  void _sendCode() {
+  Future<void> _sendCode() async {
     if (!_isPhoneValid) return;
-    setState(() {
-      _countdown = 60;
-    });
-    Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 1));
-      if (!mounted) return false;
-      setState(() => _countdown--);
-      return _countdown > 0;
-    });
+    
+    try {
+      final response = await ApiService.sendSmsCode(_phoneController.text);
+      
+      if (response.isSuccess) {
+        setState(() {
+          _countdown = 60;
+        });
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('验证码已发送'), behavior: SnackBarBehavior.floating),
+          );
+        }
+        
+        Future.doWhile(() async {
+          await Future.delayed(const Duration(seconds: 1));
+          if (!mounted) return false;
+          setState(() => _countdown--);
+          return _countdown > 0;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('发送失败: $e'), behavior: SnackBarBehavior.floating),
+        );
+      }
+    }
   }
 
-  void _login() {
+  Future<void> _login() async {
     if (_isCodeLogin) {
       if (_codeController.text.length < 4) return;
     } else {
       if (_passwordController.text.length < 6) return;
     }
-    AuthService.login();
-    context.go('/');
+
+    try {
+      final response = await ApiService.login(
+        phone: _phoneController.text,
+        code: _isCodeLogin ? _codeController.text : _passwordController.text,
+      );
+
+      if (response.isSuccess && response.data != null) {
+        final data = response.data!;
+        final accessToken = data['accessToken'] as String?;
+        final refreshToken = data['refreshToken'] as String?;
+        
+        if (accessToken != null && refreshToken != null) {
+          await AuthService.saveToken(accessToken, refreshToken);
+        }
+        
+        if (mounted) {
+          context.go('/');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('登录失败: $e'), behavior: SnackBarBehavior.floating),
+        );
+      }
+    }
   }
 
   bool get _canLogin {

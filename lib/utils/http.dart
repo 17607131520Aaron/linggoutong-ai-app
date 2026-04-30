@@ -45,10 +45,25 @@ class Http {
   Dio get dio => _dio;
 
   void _onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
-    final token = await AuthService.getToken();
-    if (token != null && token.isNotEmpty) {
-      options.headers['Authorization'] = 'Bearer $token';
+    final path = options.path;
+    
+    final whitelistPaths = [
+      '/api/app/auth/login',
+      '/api/app/auth/register',
+      '/api/app/auth/sms-code',
+      '/api/app/auth/refresh',
+      '/api/web/auth/',
+    ];
+    
+    final isWhitelisted = whitelistPaths.any((p) => path.contains(p));
+    
+    if (!isWhitelisted) {
+      final token = await AuthService.getToken();
+      if (token != null && token.isNotEmpty) {
+        options.headers['Authorization'] = 'Bearer $token';
+      }
     }
+    
     handler.next(options);
   }
 

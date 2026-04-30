@@ -9,7 +9,7 @@ class ApiResponse<T> {
     this.data,
   });
 
-  bool get isSuccess => code == 0;
+  bool get isSuccess => code == 200;
 
   factory ApiResponse.fromJson(Map<String, dynamic> json, T Function(dynamic)? fromJson) {
     return ApiResponse<T>(

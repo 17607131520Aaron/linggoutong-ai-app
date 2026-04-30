@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linggoutong_ai_app/common/ant_theme.dart';
+import 'package:linggoutong_ai_app/services/api_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -34,20 +35,40 @@ class _RegisterPageState extends State<RegisterPage> {
     });
   }
 
-  void _sendCode() {
+  Future<void> _sendCode() async {
     if (!_isPhoneValid) return;
-    setState(() {
-      _countdown = 60;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('验证码已发送'), behavior: SnackBarBehavior.floating),
-    );
-    Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 1));
-      if (!mounted) return false;
-      setState(() => _countdown--);
-      return _countdown > 0;
-    });
+    
+    try {
+      final response = await ApiService.sendSmsCode(_phoneController.text);
+      
+      print('Send SMS response: code=${response.code}, message=${response.message}, isSuccess=${response.isSuccess}');
+      
+      if (response.isSuccess) {
+        setState(() {
+          _countdown = 60;
+        });
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('验证码已发送'), behavior: SnackBarBehavior.floating),
+          );
+        }
+        
+        Future.doWhile(() async {
+          await Future.delayed(const Duration(seconds: 1));
+          if (!mounted) return false;
+          setState(() => _countdown--);
+          return _countdown > 0;
+        });
+      }
+    } catch (e) {
+      print('Send SMS error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('发送失败: $e'), behavior: SnackBarBehavior.floating),
+        );
+      }
+    }
   }
 
   bool get _canRegister {
@@ -96,63 +117,80 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  void _register() {
+  Future<void> _register() async {
     if (!_canRegister) return;
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AntRadius.md),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: AntColors.success.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.check_circle, color: AntColors.success, size: 40),
+    
+    try {
+      final response = await ApiService.register(
+        phone: _phoneController.text,
+        code: _codeController.text,
+        password: _passwordController.text,
+      );
+      
+      if (response.isSuccess && mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AntRadius.md),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              '注册成功',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AntColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              '欢迎加入领狗通AI！',
-              style: TextStyle(fontSize: 14, color: AntColors.textTertiary),
-            ),
-          ],
-        ),
-        actions: [
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(ctx);
-                context.pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AntColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AntRadius.xl),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: AntColors.success.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check_circle, color: AntColors.success, size: 40),
                 ),
-                elevation: 0,
-              ),
-              child: const Text('去登录', style: TextStyle(color: Colors.white)),
+                const SizedBox(height: 16),
+                const Text(
+                  '注册成功',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AntColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  '欢迎加入领狗通AI！',
+                  style: TextStyle(fontSize: 14, color: AntColors.textTertiary),
+                ),
+              ],
             ),
+            actions: [
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    context.pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AntColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AntRadius.xl),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text('去登录', style: TextStyle(color: Colors.white)),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('注册失败: $e'), behavior: SnackBarBehavior.floating),
+        );
+      }
+    }
   }
 
   @override
