@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:linggoutong_ai_app/pages/home/home_page.dart';
 import 'package:linggoutong_ai_app/pages/ai/ai_page.dart';
 import 'package:linggoutong_ai_app/pages/mine/mine_page.dart';
+import 'package:linggoutong_ai_app/common/ant_theme.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -62,23 +63,77 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: navigationShell.currentIndex,
-        onTap: _goBranch,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '首页',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: AntColors.bgPrimary,
+          border: Border(
+            top: BorderSide(
+              color: AntColors.borderSecondary,
+              width: 0.5,
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'AI对话',
+        ),
+        child: SafeArea(
+          child: SizedBox(
+            height: 50,
+            child: Row(
+              children: [
+                _buildNavItem(
+                  icon: Icons.home_outlined,
+                  activeIcon: Icons.home,
+                  label: '首页',
+                  index: 0,
+                ),
+                _buildNavItem(
+                  icon: Icons.chat_bubble_outline,
+                  activeIcon: Icons.chat_bubble,
+                  label: 'AI对话',
+                  index: 1,
+                ),
+                _buildNavItem(
+                  icon: Icons.person_outline,
+                  activeIcon: Icons.person,
+                  label: '我的',
+                  index: 2,
+                ),
+              ],
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '我的',
-          ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required IconData icon,
+    required IconData activeIcon,
+    required String label,
+    required int index,
+  }) {
+    final isActive = navigationShell.currentIndex == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => _goBranch(index),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              isActive ? activeIcon : icon,
+              size: 24,
+              color: isActive ? AntColors.primary : AntColors.textTertiary,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: isActive ? AntColors.primary : AntColors.textTertiary,
+                fontWeight: isActive ? FontWeight.w500 : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

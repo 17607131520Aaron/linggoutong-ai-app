@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:linggoutong_ai_app/common/ant_theme.dart';
 
 class AiPage extends StatefulWidget {
   const AiPage({super.key});
@@ -39,7 +40,6 @@ class _AiPageState extends State<AiPage> {
     _messageController.clear();
     _scrollToBottom();
 
-    // 模拟AI回复（打字机效果）
     Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted) {
         _startTypingEffect('收到您的消息：${_messages.last.text}');
@@ -119,14 +119,12 @@ class _AiPageState extends State<AiPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AntColors.bgSecondary,
       appBar: AppBar(
-        title: const Text('AI对话'),
-        backgroundColor: Colors.white,
-        elevation: 0,
+        title: const Text('AI 对话'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh, size: 22),
             onPressed: () {
               _typingTimer?.cancel();
               setState(() {
@@ -152,49 +150,48 @@ class _AiPageState extends State<AiPage> {
 
   Widget _buildEmptyState() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.all(AntSpacing.xl),
       child: Column(
         children: [
-          const SizedBox(height: 40),
-          // AI头像和欢迎语
+          const SizedBox(height: 20),
           Container(
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
-                ],
+              gradient: const LinearGradient(
+                colors: [AntColors.primary, AntColors.primaryLight],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AntColors.primary.withValues(alpha: 0.3),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            child: const Icon(
-              Icons.auto_awesome,
-              size: 40,
-              color: Colors.white,
-            ),
+            child: const Icon(Icons.auto_awesome, size: 40, color: Colors.white),
           ),
           const SizedBox(height: 16),
           const Text(
-            '你好，我是AI助手',
+            '你好，我是 AI 助手',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
+              color: AntColors.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             '有什么我可以帮你的吗？',
             style: TextStyle(
               fontSize: 15,
-              color: Colors.grey[600],
+              color: AntColors.textTertiary,
             ),
           ),
           const SizedBox(height: 32),
-          // 快捷问题卡片
           _buildQuickQuestionCard(
             icon: Icons.lightbulb_outline,
             title: '帮我写一篇',
@@ -222,7 +219,6 @@ class _AiPageState extends State<AiPage> {
             subtitle: '数学、科学、历史',
             question: '什么是机器学习？',
           ),
-          const SizedBox(height: 40),
         ],
       ),
     );
@@ -237,26 +233,22 @@ class _AiPageState extends State<AiPage> {
     return GestureDetector(
       onTap: () => _handleQuickQuestion(question),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AntSpacing.lg),
         decoration: BoxDecoration(
-          color: Colors.grey[50],
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[200]!),
+          color: AntColors.bgPrimary,
+          borderRadius: BorderRadius.circular(AntRadius.md),
+          boxShadow: AntColors.shadow,
         ),
         child: Row(
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                color: AntColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AntRadius.sm),
               ),
-              child: Icon(
-                icon,
-                color: Theme.of(context).colorScheme.primary,
-                size: 22,
-              ),
+              child: Icon(icon, color: AntColors.primary, size: 24),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -268,24 +260,21 @@ class _AiPageState extends State<AiPage> {
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
+                      color: AntColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[500],
+                      color: AntColors.textTertiary,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 14,
-              color: Colors.grey[400],
-            ),
+            const Icon(Icons.chevron_right, color: AntColors.textQuaternary, size: 20),
           ],
         ),
       ),
@@ -295,11 +284,10 @@ class _AiPageState extends State<AiPage> {
   Widget _buildMessageList() {
     return ListView.builder(
       controller: _scrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       itemCount: _messages.length,
       itemBuilder: (context, index) {
-        final message = _messages[index];
-        return _buildMessageBubble(message);
+        return _buildMessageBubble(_messages[index]);
       },
     );
   }
@@ -317,15 +305,12 @@ class _AiPageState extends State<AiPage> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
-                  ],
+                gradient: const LinearGradient(
+                  colors: [AntColors.primary, AntColors.primaryLight],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                shape: BoxShape.circle,
+                borderRadius: BorderRadius.circular(AntRadius.sm),
               ),
               child: const Icon(Icons.auto_awesome, size: 18, color: Colors.white),
             ),
@@ -338,34 +323,33 @@ class _AiPageState extends State<AiPage> {
                   : CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: message.isUser
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.grey[100],
+                    color: message.isUser ? AntColors.primary : AntColors.bgPrimary,
                     borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(16),
-                      topRight: const Radius.circular(16),
-                      bottomLeft: Radius.circular(message.isUser ? 16 : 4),
-                      bottomRight: Radius.circular(message.isUser ? 4 : 16),
+                      topLeft: const Radius.circular(AntRadius.lg),
+                      topRight: const Radius.circular(AntRadius.lg),
+                      bottomLeft: Radius.circular(message.isUser ? AntRadius.lg : AntRadius.xs),
+                      bottomRight: Radius.circular(message.isUser ? AntRadius.xs : AntRadius.lg),
                     ),
+                    boxShadow: message.isUser ? null : AntColors.shadow,
                   ),
                   child: message.isTyping
                       ? _buildTypingText(message)
                       : Text(
                           message.text,
                           style: TextStyle(
-                            color: message.isUser ? Colors.white : Colors.black87,
+                            color: message.isUser ? Colors.white : AntColors.textPrimary,
                             fontSize: 15,
-                            height: 1.4,
+                            height: 1.5,
                           ),
                         ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '${message.timestamp.hour.toString().padLeft(2, '0')}:${message.timestamp.minute.toString().padLeft(2, '0')}',
-                  style: TextStyle(
-                    color: Colors.grey[400],
+                  style: const TextStyle(
+                    color: AntColors.textQuaternary,
                     fontSize: 11,
                   ),
                 ),
@@ -378,10 +362,10 @@ class _AiPageState extends State<AiPage> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: Colors.blueGrey[100],
-                shape: BoxShape.circle,
+                color: AntColors.bgTertiary,
+                borderRadius: BorderRadius.circular(AntRadius.sm),
               ),
-              child: Icon(Icons.person, size: 18, color: Colors.blueGrey[600]),
+              child: const Icon(Icons.person, size: 18, color: AntColors.textSecondary),
             ),
           ],
         ],
@@ -396,125 +380,106 @@ class _AiPageState extends State<AiPage> {
         Text(
           message.text,
           style: const TextStyle(
-            color: Colors.black87,
+            color: AntColors.textPrimary,
             fontSize: 15,
-            height: 1.4,
+            height: 1.5,
           ),
         ),
-        _buildCursor(),
+        const AnimatedCursor(),
       ],
     );
   }
 
-  Widget _buildCursor() {
-    return AnimatedCursor();
-  }
-
   Widget _buildInputArea() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.15),
-            spreadRadius: 0,
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
+        color: AntColors.bgPrimary,
+        border: Border(
+          top: BorderSide(color: AntColors.borderSecondary, width: 0.5),
+        ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          // 左侧加号按钮
-          Container(
-            margin: const EdgeInsets.only(bottom: 4),
-            child: IconButton(
-              icon: Icon(Icons.add_circle_outline, color: Colors.grey[600], size: 28),
-              onPressed: () {
-                _showAddMenu();
-              },
-            ),
-          ),
-          const SizedBox(width: 4),
-          // 输入框
-          Expanded(
-            child: Container(
-              constraints: const BoxConstraints(maxHeight: 100),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Row(
-                children: [
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      decoration: const InputDecoration(
-                        hintText: '输入你的问题...',
-                        hintStyle: TextStyle(color: Colors.grey),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 10),
-                      ),
-                      maxLines: null,
-                      textInputAction: TextInputAction.send,
-                      onChanged: (text) {
-                        setState(() {
-                          _isComposing = text.trim().isNotEmpty;
-                        });
-                      },
-                      onSubmitted: (_) => _sendMessage(),
-                    ),
-                  ),
-                  // 语音按钮
-                  IconButton(
-                    icon: Icon(Icons.mic_outlined, color: Colors.grey[600], size: 22),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('语音功能开发中，敬请期待'),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 4),
-                ],
+      child: SafeArea(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(bottom: 6),
+              child: IconButton(
+                icon: const Icon(Icons.add_circle_outline, color: AntColors.textTertiary, size: 26),
+                onPressed: _showAddMenu,
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          // 发送按钮或停止按钮
-          Container(
-            margin: const EdgeInsets.only(bottom: 4),
-            child: GestureDetector(
-              onTap: _isTyping
-                  ? _stopTyping
-                  : (_isComposing ? _sendMessage : null),
+            const SizedBox(width: 4),
+            Expanded(
               child: Container(
-                width: 40,
-                height: 40,
+                constraints: const BoxConstraints(maxHeight: 100),
                 decoration: BoxDecoration(
-                  color: _isTyping
-                      ? Colors.red[400]
-                      : (_isComposing
-                          ? Theme.of(context).colorScheme.primary
-                          : Colors.grey[300]),
-                  shape: BoxShape.circle,
+                  color: AntColors.bgSecondary,
+                  borderRadius: BorderRadius.circular(AntRadius.xl),
                 ),
-                child: Icon(
-                  _isTyping ? Icons.stop : Icons.arrow_upward,
-                  color: _isTyping
-                      ? Colors.white
-                      : (_isComposing ? Colors.white : Colors.grey[500]),
-                  size: 22,
+                child: Row(
+                  children: [
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: TextField(
+                        controller: _messageController,
+                        decoration: const InputDecoration(
+                          hintText: '输入你的问题...',
+                          hintStyle: TextStyle(color: AntColors.textQuaternary),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 10),
+                        ),
+                        maxLines: null,
+                        textInputAction: TextInputAction.send,
+                        onChanged: (text) {
+                          setState(() {
+                            _isComposing = text.trim().isNotEmpty;
+                          });
+                        },
+                        onSubmitted: (_) => _sendMessage(),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.mic_outlined, color: AntColors.textTertiary, size: 22),
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('语音功能开发中，敬请期待'),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(width: 4),
+                  ],
                 ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            Container(
+              margin: const EdgeInsets.only(bottom: 6),
+              child: GestureDetector(
+                onTap: _isTyping ? _stopTyping : (_isComposing ? _sendMessage : null),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: _isTyping
+                        ? AntColors.error
+                        : (_isComposing ? AntColors.primary : AntColors.borderSecondary),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    _isTyping ? Icons.stop : Icons.arrow_upward,
+                    color: _isTyping || _isComposing ? Colors.white : AntColors.textTertiary,
+                    size: 22,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -523,12 +488,12 @@ class _AiPageState extends State<AiPage> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AntRadius.lg)),
       ),
       builder: (context) {
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -589,17 +554,17 @@ class _AiPageState extends State<AiPage> {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(14),
+              color: AntColors.bgSecondary,
+              borderRadius: BorderRadius.circular(AntRadius.md),
             ),
-            child: Icon(icon, size: 28, color: Colors.grey[700]),
+            child: Icon(icon, size: 28, color: AntColors.textSecondary),
           ),
           const SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
-              color: Colors.grey[700],
+              color: AntColors.textSecondary,
             ),
           ),
         ],
@@ -646,7 +611,7 @@ class _AnimatedCursorState extends State<AnimatedCursor>
           height: 16,
           margin: const EdgeInsets.only(left: 2),
           decoration: BoxDecoration(
-            color: Colors.black87.withValues(alpha: _animation.value),
+            color: AntColors.textPrimary.withValues(alpha: _animation.value),
             borderRadius: BorderRadius.circular(1),
           ),
         );
