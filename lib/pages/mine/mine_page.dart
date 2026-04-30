@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linggoutong_ai_app/common/ant_theme.dart';
+import 'package:linggoutong_ai_app/services/auth_service.dart';
 
 class MinePage extends StatelessWidget {
   const MinePage({super.key});
@@ -302,9 +303,10 @@ class MinePage extends StatelessWidget {
                 child: const Text('取消', style: TextStyle(color: AntColors.textTertiary)),
               ),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   Navigator.pop(ctx);
-                  context.go('/login');
+                  await AuthService.logout();
+                  if (context.mounted) context.go('/login');
                 },
                 child: const Text('确定', style: TextStyle(color: AntColors.primary)),
               ),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:linggoutong_ai_app/router/app_router.dart';
 import 'package:linggoutong_ai_app/common/ant_theme.dart';
+import 'package:linggoutong_ai_app/services/auth_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AuthService.init();
   runApp(const MyApp());
 }
 

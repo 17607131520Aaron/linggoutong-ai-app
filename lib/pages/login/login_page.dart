@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linggoutong_ai_app/common/ant_theme.dart';
+import 'package:linggoutong_ai_app/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -51,6 +52,7 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       if (_passwordController.text.length < 6) return;
     }
+    AuthService.login();
     context.go('/');
   }
 

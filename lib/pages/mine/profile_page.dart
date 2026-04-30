@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linggoutong_ai_app/common/ant_theme.dart';
+import 'package:linggoutong_ai_app/services/auth_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -403,8 +404,10 @@ class _ProfilePageState extends State<ProfilePage> {
             child: const Text('取消', style: TextStyle(color: AntColors.textTertiary)),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
+              await AuthService.logout();
+              if (!context.mounted) return;
               context.go('/login');
             },
             child: const Text('确定', style: TextStyle(color: AntColors.primary)),
@@ -429,8 +432,10 @@ class _ProfilePageState extends State<ProfilePage> {
             child: const Text('取消', style: TextStyle(color: AntColors.textTertiary)),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
+              await AuthService.logout();
+              if (!context.mounted) return;
               context.go('/login');
             },
             child: const Text('确定', style: TextStyle(color: AntColors.primary)),

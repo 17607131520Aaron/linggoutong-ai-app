@@ -7,10 +7,24 @@ import 'package:linggoutong_ai_app/pages/mine/profile_page.dart';
 import 'package:linggoutong_ai_app/pages/login/login_page.dart';
 import 'package:linggoutong_ai_app/pages/register/register_page.dart';
 import 'package:linggoutong_ai_app/common/ant_theme.dart';
+import 'package:linggoutong_ai_app/services/auth_service.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/',
+    redirect: (context, state) {
+      final isLoggedIn = AuthService.isLoggedIn;
+      final isLoginRoute = state.matchedLocation == '/login';
+      final isRegisterRoute = state.matchedLocation == '/register';
+
+      if (!isLoggedIn && !isLoginRoute && !isRegisterRoute) {
+        return '/login';
+      }
+      if (isLoggedIn && isLoginRoute) {
+        return '/';
+      }
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/login',
