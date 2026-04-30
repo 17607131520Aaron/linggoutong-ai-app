@@ -86,6 +86,21 @@ class _AiPageState extends State<AiPage> {
     });
   }
 
+  void _stopTyping() {
+    _typingTimer?.cancel();
+    if (_messages.isNotEmpty && _messages.last.isTyping) {
+      setState(() {
+        _isTyping = false;
+        _messages.last = ChatMessage(
+          text: _messages.last.text,
+          isUser: false,
+          timestamp: _messages.last.timestamp,
+          isTyping: false,
+        );
+      });
+    }
+  }
+
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
@@ -471,23 +486,29 @@ class _AiPageState extends State<AiPage> {
             ),
           ),
           const SizedBox(width: 8),
-          // 发送按钮
+          // 发送按钮或停止按钮
           Container(
             margin: const EdgeInsets.only(bottom: 4),
             child: GestureDetector(
-              onTap: _isComposing ? _sendMessage : null,
+              onTap: _isTyping
+                  ? _stopTyping
+                  : (_isComposing ? _sendMessage : null),
               child: Container(
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: _isComposing
-                      ? Theme.of(context).colorScheme.primary
-                      : Colors.grey[300],
+                  color: _isTyping
+                      ? Colors.red[400]
+                      : (_isComposing
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.grey[300]),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.arrow_upward,
-                  color: _isComposing ? Colors.white : Colors.grey[500],
+                  _isTyping ? Icons.stop : Icons.arrow_upward,
+                  color: _isTyping
+                      ? Colors.white
+                      : (_isComposing ? Colors.white : Colors.grey[500]),
                   size: 22,
                 ),
               ),

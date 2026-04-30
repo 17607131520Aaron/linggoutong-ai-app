@@ -28,11 +28,7 @@ class MinePage extends StatelessWidget {
           CircleAvatar(
             radius: 40,
             backgroundColor: Theme.of(context).colorScheme.primary,
-            child: const Icon(
-              Icons.person,
-              size: 40,
-              color: Colors.white,
-            ),
+            child: const Icon(Icons.person, size: 40, color: Colors.white),
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -41,18 +37,12 @@ class MinePage extends StatelessWidget {
               children: [
                 const Text(
                   '用户昵称',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'ID: 100001',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -83,24 +73,9 @@ class MinePage extends StatelessWidget {
           title: '收藏夹',
           onTap: () {},
         ),
-        _buildMenuItem(
-          context,
-          icon: Icons.star,
-          title: '我的会员',
-          onTap: () {},
-        ),
-        _buildMenuItem(
-          context,
-          icon: Icons.help,
-          title: '帮助与反馈',
-          onTap: () {},
-        ),
-        _buildMenuItem(
-          context,
-          icon: Icons.info,
-          title: '关于我们',
-          onTap: () {},
-        ),
+        _buildMenuItem(context, icon: Icons.star, title: '我的会员', onTap: () {}),
+        _buildMenuItem(context, icon: Icons.help, title: '帮助与反馈', onTap: () {}),
+        _buildMenuItem(context, icon: Icons.info, title: '关于我们', onTap: () {}),
       ],
     );
   }
