@@ -392,7 +392,7 @@ class _AiPageState extends State<AiPage> {
 
   Widget _buildInputArea() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 20),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       decoration: BoxDecoration(
         color: AntColors.bgPrimary,
         border: Border(
@@ -400,85 +400,98 @@ class _AiPageState extends State<AiPage> {
         ),
       ),
       child: SafeArea(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Container(
-              margin: const EdgeInsets.only(bottom: 6),
-              child: IconButton(
-                icon: const Icon(Icons.add_circle_outline, color: AntColors.textTertiary, size: 26),
-                onPressed: _showAddMenu,
-              ),
-            ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: Container(
-                constraints: const BoxConstraints(maxHeight: 100),
-                decoration: BoxDecoration(
-                  color: AntColors.bgSecondary,
-                  borderRadius: BorderRadius.circular(AntRadius.xl),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // 左侧加号按钮
+              GestureDetector(
+                onTap: _showAddMenu,
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: AntColors.bgSecondary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.add, color: AntColors.textTertiary, size: 24),
                 ),
-                child: Row(
-                  children: [
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: TextField(
-                        controller: _messageController,
-                        decoration: const InputDecoration(
-                          hintText: '输入你的问题...',
-                          hintStyle: TextStyle(color: AntColors.textQuaternary),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(vertical: 10),
-                        ),
-                        maxLines: null,
-                        textInputAction: TextInputAction.send,
-                        onChanged: (text) {
-                          setState(() {
-                            _isComposing = text.trim().isNotEmpty;
-                          });
-                        },
-                        onSubmitted: (_) => _sendMessage(),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.mic_outlined, color: AntColors.textTertiary, size: 22),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('语音功能开发中，敬请期待'),
-                            behavior: SnackBarBehavior.floating,
+              ),
+              const SizedBox(width: 10),
+              // 中间输入框
+              Expanded(
+                child: Container(
+                  constraints: const BoxConstraints(maxHeight: 100),
+                  decoration: BoxDecoration(
+                    color: AntColors.bgSecondary,
+                    borderRadius: BorderRadius.circular(AntRadius.xl),
+                  ),
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: TextField(
+                          controller: _messageController,
+                          decoration: const InputDecoration(
+                            hintText: '输入你的问题...',
+                            hintStyle: TextStyle(color: AntColors.textQuaternary, fontSize: 15),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(vertical: 10),
                           ),
-                        );
-                      },
-                    ),
-                    const SizedBox(width: 4),
-                  ],
+                          maxLines: null,
+                          textInputAction: TextInputAction.send,
+                          style: const TextStyle(fontSize: 15),
+                          onChanged: (text) {
+                            setState(() {
+                              _isComposing = text.trim().isNotEmpty;
+                            });
+                          },
+                          onSubmitted: (_) => _sendMessage(),
+                        ),
+                      ),
+                      // 语音按钮
+                      GestureDetector(
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('语音功能开发中，敬请期待'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          child: const Icon(Icons.mic_outlined, color: AntColors.textTertiary, size: 22),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Container(
-              margin: const EdgeInsets.only(bottom: 6),
-              child: GestureDetector(
+              const SizedBox(width: 10),
+              // 右侧发送/停止按钮
+              GestureDetector(
                 onTap: _isTyping ? _stopTyping : (_isComposing ? _sendMessage : null),
                 child: Container(
-                  width: 40,
-                  height: 40,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
                     color: _isTyping
                         ? AntColors.error
-                        : (_isComposing ? AntColors.primary : AntColors.borderSecondary),
+                        : (_isComposing ? AntColors.primary : AntColors.bgSecondary),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     _isTyping ? Icons.stop : Icons.arrow_upward,
                     color: _isTyping || _isComposing ? Colors.white : AntColors.textTertiary,
-                    size: 22,
+                    size: 20,
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
