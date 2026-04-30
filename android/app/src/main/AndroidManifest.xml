@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="linggoutong_ai_app"
+        android:label="领狗通AI"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
